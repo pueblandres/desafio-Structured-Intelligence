@@ -1,0 +1,68 @@
+package com.example.importdeclaration.service.xml;
+
+import com.example.importdeclaration.dto.DeclaracionInternaDto;
+import com.example.importdeclaration.dto.ItemDeclaracionInternaDto;
+import com.example.importdeclaration.entity.DeclarationStatus;
+import com.example.importdeclaration.exception.XmlTransformationException;
+import java.io.StringReader;
+import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
+import javax.xml.XMLConstants;
+import javax.xml.parsers.DocumentBuilderFactory;
+import org.springframework.stereotype.Service;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.NodeList;
+import org.xml.sax.InputSource;
+
+@Service
+public class DeclaracionXmlParserService {
+
+    public DeclaracionInternaDto parse(String xmlInterno) {
+        try {
+            DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+            factory.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
+            factory.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
+            Document document = factory.newDocumentBuilder().parse(new InputSource(new StringReader(xmlInterno)));
+            Element root = document.getDocumentElement();
+
+            return new DeclaracionInternaDto(
+                    text(root, "numeroDespacho"),
+                    LocalDate.parse(text(root, "fechaEmision")),
+                    text(root, "cuitImportador"),
+                    text(root, "moneda"),
+                    DeclarationStatus.valueOf(text(root, "estado")),
+                    parseItems(root)
+            );
+        } catch (Exception ex) {
+            throw new XmlTransformationException("No se pudo parsear el XML interno transformado", ex);
+        }
+    }
+
+    private List<ItemDeclaracionInternaDto> parseItems(Element root) {
+        NodeList itemNodes = root.getElementsByTagName("item");
+        List<ItemDeclaracionInternaDto> items = new ArrayList<>();
+
+        for (int i = 0; i < itemNodes.getLength(); i++) {
+            Element item = (Element) itemNodes.item(i);
+            items.add(new ItemDeclaracionInternaDto(
+                    text(item, "ncm"),
+                    text(item, "descripcion"),
+                    new BigDecimal(text(item, "cantidad")),
+                    new BigDecimal(text(item, "valorUnitario"))
+            ));
+        }
+
+        return items;
+    }
+
+    private String text(Element element, String tagName) {
+        NodeList nodes = element.getElementsByTagName(tagName);
+        if (nodes.getLength() == 0) {
+            throw new IllegalArgumentException("Falta el nodo requerido: " + tagName);
+        }
+        return nodes.item(0).getTextContent().trim();
+    }
+}
