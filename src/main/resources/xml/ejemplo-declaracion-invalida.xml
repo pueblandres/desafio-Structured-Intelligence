@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<declaracion>
+    <numeroDespacho>26001IM04000999X</numeroDespacho>
+    <fechaEmision>2026-05-15</fechaEmision>
+    <importador>
+        <cuit>30711111119</cuit>
+        <razonSocial>Test SA</razonSocial>
+    </importador>
+    <items>
+        <item>
+            <ncm>8471.30.12</ncm>
+            <descripcion>Producto X</descripcion>
+            <cantidad>diez</cantidad>
+            <valorUnitario>100.00</valorUnitario>
+        </item>
+    </items>
+</declaracion>

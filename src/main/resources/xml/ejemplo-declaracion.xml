@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<declaracion>
+    <numeroDespacho>26001IM04000123A</numeroDespacho>
+    <fechaEmision>2026-05-12</fechaEmision>
+    <importador>
+        <cuit>30715432109</cuit>
+        <razonSocial>Importadora del Plata S.A.</razonSocial>
+    </importador>
+    <moneda>USD</moneda>
+    <items>
+        <item>
+            <ncm>8471.30.12</ncm>
+            <descripcion>Notebook 14 pulgadas</descripcion>
+            <cantidad>50</cantidad>
+            <valorUnitario>720.00</valorUnitario>
+        </item>
+        <item>
+            <ncm>8528.72.00</ncm>
+            <descripcion>Monitor LED 24&quot;</descripcion>
+            <cantidad>30</cantidad>
+            <valorUnitario>185.50</valorUnitario>
+        </item>
+    </items>
+</declaracion>
