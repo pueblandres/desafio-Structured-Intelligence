@@ -1,8 +1,11 @@
 package com.example.importdeclaration.controller;
 
+import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.not;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -98,6 +101,25 @@ class DeclaracionControllerIntegrationTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.content", hasSize(1)))
                 .andExpect(jsonPath("$.content[0].numeroDespacho").value("26001IM04000123A"));
+    }
+
+    @Test
+    void openApiDocsDocumentXmlRequestAndResourceExamplesPath() throws Exception {
+        mockMvc.perform(get("/v3/api-docs"))
+                .andExpect(status().isOk())
+                .andExpect(content().string(containsString("\"application/xml\"")))
+                .andExpect(content().string(containsString("Ejemplos XML disponibles en src/main/resources/xml/")))
+                .andExpect(content().string(containsString("\"type\":\"string\"")))
+                .andExpect(content().string(not(containsString("\"Declaracion valida\""))))
+                .andExpect(content().string(not(containsString("26001IM04000123A"))))
+                .andExpect(content().string(not(containsString("root element name is undefined"))));
+    }
+
+    @Test
+    void serviceWorkerRequestReturnsStaticNoopScript() throws Exception {
+        mockMvc.perform(get("/service-worker.js"))
+                .andExpect(status().isOk())
+                .andExpect(content().string(containsString("registration.unregister")));
     }
 
     private String readResource(String path) throws Exception {

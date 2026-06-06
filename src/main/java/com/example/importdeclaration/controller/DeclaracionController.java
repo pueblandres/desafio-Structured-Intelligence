@@ -6,7 +6,6 @@ import com.example.importdeclaration.entity.DeclarationStatus;
 import com.example.importdeclaration.service.DeclaracionService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
-import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import java.net.URI;
@@ -36,34 +35,12 @@ public class DeclaracionController {
 
     @Operation(
             summary = "Recibir declaracion XML",
-            description = "Recibe una declaracion de importacion en application/xml, la valida contra XSD, aplica XSLT, calcula totalFOB y la persiste.",
+            description = "Recibe una declaracion de importacion en application/xml, la valida contra XSD, aplica XSLT, calcula totalFOB y la persiste. Ejemplos XML disponibles en src/main/resources/xml/.",
             requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
                     required = true,
                     content = @Content(
                             mediaType = MediaType.APPLICATION_XML_VALUE,
-                            examples = @ExampleObject(
-                                    name = "Declaracion valida",
-                                    value = """
-                                            <?xml version="1.0" encoding="UTF-8"?>
-                                            <declaracion>
-                                                <numeroDespacho>26001IM04000123A</numeroDespacho>
-                                                <fechaEmision>2026-05-12</fechaEmision>
-                                                <importador>
-                                                    <cuit>30715432109</cuit>
-                                                    <razonSocial>Importadora del Plata S.A.</razonSocial>
-                                                </importador>
-                                                <moneda>USD</moneda>
-                                                <items>
-                                                    <item>
-                                                        <ncm>8471.30.12</ncm>
-                                                        <descripcion>Notebook 14 pulgadas</descripcion>
-                                                        <cantidad>50</cantidad>
-                                                        <valorUnitario>720.00</valorUnitario>
-                                                    </item>
-                                                </items>
-                                            </declaracion>
-                                            """
-                            )
+                            schema = @Schema(type = "string")
                     )
             ),
             responses = {

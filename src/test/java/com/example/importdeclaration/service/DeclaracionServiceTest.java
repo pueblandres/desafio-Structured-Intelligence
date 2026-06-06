@@ -5,6 +5,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import com.example.importdeclaration.dto.DeclaracionInternaDTO;
 import com.example.importdeclaration.dto.ItemDeclaracionInternaDTO;
 import com.example.importdeclaration.entity.DeclarationStatus;
+import com.example.importdeclaration.service.impl.DeclaracionServiceImpl;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
@@ -14,7 +15,7 @@ class DeclaracionServiceTest {
 
     @Test
     void calculateTotalFOBUsesQuantityTimesUnitValueForAllItems() {
-        DeclaracionService service = new DeclaracionService(null, null, null, null, null);
+        DeclaracionServiceImpl service = new DeclaracionServiceImpl(null, null, null, null, null);
         DeclaracionInternaDTO dto = new DeclaracionInternaDTO(
                 "26001IM04000123A",
                 LocalDate.parse("2026-05-12"),
