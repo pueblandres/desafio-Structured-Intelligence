@@ -1,9 +1,9 @@
 package com.example.importdeclaration.mapper;
 
-import com.example.importdeclaration.dto.DeclaracionInternaDto;
-import com.example.importdeclaration.dto.DeclaracionResponse;
-import com.example.importdeclaration.dto.ItemDeclaracionInternaDto;
-import com.example.importdeclaration.dto.ItemDeclaracionResponse;
+import com.example.importdeclaration.dto.DeclaracionInternaDTO;
+import com.example.importdeclaration.dto.DeclaracionResponseDTO;
+import com.example.importdeclaration.dto.ItemDeclaracionInternaDTO;
+import com.example.importdeclaration.dto.ItemDeclaracionResponseDTO;
 import com.example.importdeclaration.entity.Declaracion;
 import com.example.importdeclaration.entity.ItemDeclaracion;
 import java.math.BigDecimal;
@@ -13,23 +13,26 @@ import org.springframework.stereotype.Component;
 @Component
 public class DeclaracionMapper {
 
-    public Declaracion toEntity(DeclaracionInternaDto dto, BigDecimal totalFOB) {
-        Declaracion declaracion = new Declaracion();
-        declaracion.setNumeroDespacho(dto.numeroDespacho());
-        declaracion.setFechaEmision(dto.fechaEmision());
-        declaracion.setCuitImportador(dto.cuitImportador());
-        declaracion.setMoneda(dto.moneda());
-        declaracion.setEstado(dto.estado());
-        declaracion.setTotalFOB(totalFOB);
-        declaracion.setFechaRecepcion(LocalDateTime.now());
+    public Declaracion toEntity(DeclaracionInternaDTO dto, BigDecimal totalFOB) {
+        Declaracion declaracion = Declaracion.builder()
+                .numeroDespacho(dto.numeroDespacho())
+                .fechaEmision(dto.fechaEmision())
+                .cuitImportador(dto.cuitImportador())
+                .moneda(dto.moneda())
+                .estado(dto.estado())
+                .totalFOB(totalFOB)
+                .fechaRecepcion(LocalDateTime.now())
+                .build();
+
         dto.items().stream()
                 .map(this::toEntity)
                 .forEach(declaracion::addItem);
+
         return declaracion;
     }
 
-    public DeclaracionResponse toResponse(Declaracion declaracion) {
-        return new DeclaracionResponse(
+    public DeclaracionResponseDTO toResponse(Declaracion declaracion) {
+        return new DeclaracionResponseDTO(
                 declaracion.getId(),
                 declaracion.getNumeroDespacho(),
                 declaracion.getFechaEmision(),
@@ -44,17 +47,17 @@ public class DeclaracionMapper {
         );
     }
 
-    private ItemDeclaracion toEntity(ItemDeclaracionInternaDto dto) {
-        ItemDeclaracion item = new ItemDeclaracion();
-        item.setNcm(dto.ncm());
-        item.setDescripcion(dto.descripcion());
-        item.setCantidad(dto.cantidad());
-        item.setValorUnitario(dto.valorUnitario());
-        return item;
+    private ItemDeclaracion toEntity(ItemDeclaracionInternaDTO dto) {
+        return ItemDeclaracion.builder()
+                .ncm(dto.ncm())
+                .descripcion(dto.descripcion())
+                .cantidad(dto.cantidad())
+                .valorUnitario(dto.valorUnitario())
+                .build();
     }
 
-    private ItemDeclaracionResponse toResponse(ItemDeclaracion item) {
-        return new ItemDeclaracionResponse(
+    private ItemDeclaracionResponseDTO toResponse(ItemDeclaracion item) {
+        return new ItemDeclaracionResponseDTO(
                 item.getId(),
                 item.getNcm(),
                 item.getDescripcion(),

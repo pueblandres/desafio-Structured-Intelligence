@@ -2,8 +2,8 @@ package com.example.importdeclaration.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import com.example.importdeclaration.dto.DeclaracionInternaDto;
-import com.example.importdeclaration.dto.ItemDeclaracionInternaDto;
+import com.example.importdeclaration.dto.DeclaracionInternaDTO;
+import com.example.importdeclaration.dto.ItemDeclaracionInternaDTO;
 import com.example.importdeclaration.entity.DeclarationStatus;
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -15,15 +15,15 @@ class DeclaracionServiceTest {
     @Test
     void calculateTotalFOBUsesQuantityTimesUnitValueForAllItems() {
         DeclaracionService service = new DeclaracionService(null, null, null, null, null);
-        DeclaracionInternaDto dto = new DeclaracionInternaDto(
+        DeclaracionInternaDTO dto = new DeclaracionInternaDTO(
                 "26001IM04000123A",
                 LocalDate.parse("2026-05-12"),
                 "30715432109",
                 "USD",
                 DeclarationStatus.RECIBIDA,
                 List.of(
-                        new ItemDeclaracionInternaDto("8471.30.12", "Notebook", new BigDecimal("50"), new BigDecimal("720.00")),
-                        new ItemDeclaracionInternaDto("8528.72.00", "Monitor", new BigDecimal("30"), new BigDecimal("185.50"))
+                        new ItemDeclaracionInternaDTO("8471.30.12", "Notebook", new BigDecimal("50"), new BigDecimal("720.00")),
+                        new ItemDeclaracionInternaDTO("8528.72.00", "Monitor", new BigDecimal("30"), new BigDecimal("185.50"))
                 )
         );
 

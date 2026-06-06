@@ -1,7 +1,7 @@
 package com.example.importdeclaration.controller;
 
-import com.example.importdeclaration.dto.CreateDeclaracionResponse;
-import com.example.importdeclaration.dto.DeclaracionResponse;
+import com.example.importdeclaration.dto.CreateDeclaracionResponseDTO;
+import com.example.importdeclaration.dto.DeclaracionResponseDTO;
 import com.example.importdeclaration.entity.DeclarationStatus;
 import com.example.importdeclaration.service.DeclaracionService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -68,15 +68,15 @@ public class DeclaracionController {
             ),
             responses = {
                     @ApiResponse(responseCode = "201", description = "Declaracion creada",
-                            content = @Content(schema = @Schema(implementation = CreateDeclaracionResponse.class))),
+                            content = @Content(schema = @Schema(implementation = CreateDeclaracionResponseDTO.class))),
                     @ApiResponse(responseCode = "400", description = "XML invalido"),
                     @ApiResponse(responseCode = "409", description = "numeroDespacho duplicado"),
                     @ApiResponse(responseCode = "500", description = "Error interno")
             }
     )
     @PostMapping(consumes = MediaType.APPLICATION_XML_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<CreateDeclaracionResponse> create(@RequestBody String xml) {
-        CreateDeclaracionResponse response = declaracionService.createFromXml(xml);
+    public ResponseEntity<CreateDeclaracionResponseDTO> create(@RequestBody String xml) {
+        CreateDeclaracionResponseDTO response = declaracionService.createFromXml(xml);
         return ResponseEntity
                 .created(URI.create("/api/declaraciones/" + response.numeroDespacho()))
                 .body(response);
@@ -87,12 +87,12 @@ public class DeclaracionController {
             description = "Devuelve una declaracion persistida con sus items.",
             responses = {
                     @ApiResponse(responseCode = "200", description = "Declaracion encontrada",
-                            content = @Content(schema = @Schema(implementation = DeclaracionResponse.class))),
+                            content = @Content(schema = @Schema(implementation = DeclaracionResponseDTO.class))),
                     @ApiResponse(responseCode = "404", description = "Declaracion no encontrada")
             }
     )
     @GetMapping(path = "/{numeroDespacho}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<DeclaracionResponse> getByNumeroDespacho(@PathVariable String numeroDespacho) {
+    public ResponseEntity<DeclaracionResponseDTO> getByNumeroDespacho(@PathVariable String numeroDespacho) {
         return ResponseEntity.ok(declaracionService.getByNumeroDespacho(numeroDespacho));
     }
 
@@ -104,7 +104,7 @@ public class DeclaracionController {
             }
     )
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Page<DeclaracionResponse>> list(
+    public ResponseEntity<Page<DeclaracionResponseDTO>> list(
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate desde,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate hasta,
             @RequestParam(required = false) DeclarationStatus estado,

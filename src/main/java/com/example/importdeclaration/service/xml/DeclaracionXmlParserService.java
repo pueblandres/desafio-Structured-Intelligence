@@ -1,7 +1,7 @@
 package com.example.importdeclaration.service.xml;
 
-import com.example.importdeclaration.dto.DeclaracionInternaDto;
-import com.example.importdeclaration.dto.ItemDeclaracionInternaDto;
+import com.example.importdeclaration.dto.DeclaracionInternaDTO;
+import com.example.importdeclaration.dto.ItemDeclaracionInternaDTO;
 import com.example.importdeclaration.entity.DeclarationStatus;
 import com.example.importdeclaration.exception.XmlTransformationException;
 import java.io.StringReader;
@@ -20,7 +20,7 @@ import org.xml.sax.InputSource;
 @Service
 public class DeclaracionXmlParserService {
 
-    public DeclaracionInternaDto parse(String xmlInterno) {
+    public DeclaracionInternaDTO parse(String xmlInterno) {
         try {
             DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
             factory.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
@@ -28,7 +28,7 @@ public class DeclaracionXmlParserService {
             Document document = factory.newDocumentBuilder().parse(new InputSource(new StringReader(xmlInterno)));
             Element root = document.getDocumentElement();
 
-            return new DeclaracionInternaDto(
+            return new DeclaracionInternaDTO(
                     text(root, "numeroDespacho"),
                     LocalDate.parse(text(root, "fechaEmision")),
                     text(root, "cuitImportador"),
@@ -41,13 +41,13 @@ public class DeclaracionXmlParserService {
         }
     }
 
-    private List<ItemDeclaracionInternaDto> parseItems(Element root) {
+    private List<ItemDeclaracionInternaDTO> parseItems(Element root) {
         NodeList itemNodes = root.getElementsByTagName("item");
-        List<ItemDeclaracionInternaDto> items = new ArrayList<>();
+        List<ItemDeclaracionInternaDTO> items = new ArrayList<>();
 
         for (int i = 0; i < itemNodes.getLength(); i++) {
             Element item = (Element) itemNodes.item(i);
-            items.add(new ItemDeclaracionInternaDto(
+            items.add(new ItemDeclaracionInternaDTO(
                     text(item, "ncm"),
                     text(item, "descripcion"),
                     new BigDecimal(text(item, "cantidad")),

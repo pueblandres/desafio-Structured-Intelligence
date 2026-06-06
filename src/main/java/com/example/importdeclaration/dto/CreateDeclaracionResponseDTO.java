@@ -1,6 +1,6 @@
 package com.example.importdeclaration.dto;
 
-public record CreateDeclaracionResponse(
+public record CreateDeclaracionResponseDTO(
         Long id,
         String numeroDespacho
 ) {

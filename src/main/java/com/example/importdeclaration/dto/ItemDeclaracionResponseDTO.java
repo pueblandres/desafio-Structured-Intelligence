@@ -2,7 +2,8 @@ package com.example.importdeclaration.dto;
 
 import java.math.BigDecimal;
 
-public record ItemDeclaracionInternaDto(
+public record ItemDeclaracionResponseDTO(
+        Long id,
         String ncm,
         String descripcion,
         BigDecimal cantidad,

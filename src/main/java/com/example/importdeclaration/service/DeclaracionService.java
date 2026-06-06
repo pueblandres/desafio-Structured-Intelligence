@@ -1,9 +1,9 @@
 package com.example.importdeclaration.service;
 
-import com.example.importdeclaration.dto.CreateDeclaracionResponse;
-import com.example.importdeclaration.dto.DeclaracionInternaDto;
-import com.example.importdeclaration.dto.DeclaracionResponse;
-import com.example.importdeclaration.dto.ItemDeclaracionInternaDto;
+import com.example.importdeclaration.dto.CreateDeclaracionResponseDTO;
+import com.example.importdeclaration.dto.DeclaracionInternaDTO;
+import com.example.importdeclaration.dto.DeclaracionResponseDTO;
+import com.example.importdeclaration.dto.ItemDeclaracionInternaDTO;
 import com.example.importdeclaration.entity.DeclarationStatus;
 import com.example.importdeclaration.entity.Declaracion;
 import com.example.importdeclaration.exception.DeclarationNotFoundException;
@@ -46,10 +46,10 @@ public class DeclaracionService {
     }
 
     @Transactional
-    public CreateDeclaracionResponse createFromXml(String xml) {
+    public CreateDeclaracionResponseDTO createFromXml(String xml) {
         xmlValidationService.validate(xml);
         String xmlInterno = xsltTransformationService.transform(xml);
-        DeclaracionInternaDto dto = declaracionXmlParserService.parse(xmlInterno);
+        DeclaracionInternaDTO dto = declaracionXmlParserService.parse(xmlInterno);
 
         if (declaracionRepository.existsByNumeroDespacho(dto.numeroDespacho())) {
             throw new DuplicateDeclarationException(dto.numeroDespacho());
@@ -58,18 +58,18 @@ public class DeclaracionService {
         BigDecimal totalFOB = calculateTotalFOB(dto);
         Declaracion declaracion = declaracionMapper.toEntity(dto, totalFOB);
         Declaracion saved = declaracionRepository.save(declaracion);
-        return new CreateDeclaracionResponse(saved.getId(), saved.getNumeroDespacho());
+        return new CreateDeclaracionResponseDTO(saved.getId(), saved.getNumeroDespacho());
     }
 
     @Transactional(readOnly = true)
-    public DeclaracionResponse getByNumeroDespacho(String numeroDespacho) {
+    public DeclaracionResponseDTO getByNumeroDespacho(String numeroDespacho) {
         return declaracionRepository.findByNumeroDespacho(numeroDespacho)
                 .map(declaracionMapper::toResponse)
                 .orElseThrow(() -> new DeclarationNotFoundException(numeroDespacho));
     }
 
     @Transactional(readOnly = true)
-    public Page<DeclaracionResponse> list(LocalDate desde, LocalDate hasta, DeclarationStatus estado, Pageable pageable) {
+    public Page<DeclaracionResponseDTO> list(LocalDate desde, LocalDate hasta, DeclarationStatus estado, Pageable pageable) {
         Specification<Declaracion> specification = Specification
                 .where(DeclaracionSpecifications.fechaDesde(desde))
                 .and(DeclaracionSpecifications.fechaHasta(hasta))
@@ -79,13 +79,13 @@ public class DeclaracionService {
                 .map(declaracionMapper::toResponse);
     }
 
-    public BigDecimal calculateTotalFOB(DeclaracionInternaDto dto) {
+    public BigDecimal calculateTotalFOB(DeclaracionInternaDTO dto) {
         return dto.items().stream()
                 .map(this::calculateItemTotal)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
     }
 
-    private BigDecimal calculateItemTotal(ItemDeclaracionInternaDto item) {
+    private BigDecimal calculateItemTotal(ItemDeclaracionInternaDTO item) {
         return item.cantidad().multiply(item.valorUnitario());
     }
 }

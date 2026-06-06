@@ -11,12 +11,19 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Index;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+import lombok.*;
+
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+@Getter
+@Setter
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 @Entity
 @Table(
         name = "declaraciones",
@@ -54,72 +61,9 @@ public class Declaracion {
     @Column(name = "fecha_recepcion", nullable = false)
     private LocalDateTime fechaRecepcion;
 
+    @Builder.Default
     @OneToMany(mappedBy = "declaracion", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ItemDeclaracion> items = new ArrayList<>();
-
-    public Long getId() {
-        return id;
-    }
-
-    public String getNumeroDespacho() {
-        return numeroDespacho;
-    }
-
-    public void setNumeroDespacho(String numeroDespacho) {
-        this.numeroDespacho = numeroDespacho;
-    }
-
-    public LocalDate getFechaEmision() {
-        return fechaEmision;
-    }
-
-    public void setFechaEmision(LocalDate fechaEmision) {
-        this.fechaEmision = fechaEmision;
-    }
-
-    public String getCuitImportador() {
-        return cuitImportador;
-    }
-
-    public void setCuitImportador(String cuitImportador) {
-        this.cuitImportador = cuitImportador;
-    }
-
-    public BigDecimal getTotalFOB() {
-        return totalFOB;
-    }
-
-    public void setTotalFOB(BigDecimal totalFOB) {
-        this.totalFOB = totalFOB;
-    }
-
-    public String getMoneda() {
-        return moneda;
-    }
-
-    public void setMoneda(String moneda) {
-        this.moneda = moneda;
-    }
-
-    public DeclarationStatus getEstado() {
-        return estado;
-    }
-
-    public void setEstado(DeclarationStatus estado) {
-        this.estado = estado;
-    }
-
-    public LocalDateTime getFechaRecepcion() {
-        return fechaRecepcion;
-    }
-
-    public void setFechaRecepcion(LocalDateTime fechaRecepcion) {
-        this.fechaRecepcion = fechaRecepcion;
-    }
-
-    public List<ItemDeclaracion> getItems() {
-        return items;
-    }
 
     public void addItem(ItemDeclaracion item) {
         items.add(item);
