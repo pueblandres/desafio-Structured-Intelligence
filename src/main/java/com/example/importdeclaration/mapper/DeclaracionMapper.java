@@ -6,21 +6,20 @@ import com.example.importdeclaration.dto.ItemDeclaracionInternaDTO;
 import com.example.importdeclaration.dto.ItemDeclaracionResponseDTO;
 import com.example.importdeclaration.entity.Declaracion;
 import com.example.importdeclaration.entity.ItemDeclaracion;
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import org.springframework.stereotype.Component;
 
 @Component
 public class DeclaracionMapper {
 
-    public Declaracion toEntity(DeclaracionInternaDTO dto, BigDecimal totalFOB) {
+    public Declaracion toEntity(DeclaracionInternaDTO dto) {
         Declaracion declaracion = Declaracion.builder()
                 .numeroDespacho(dto.numeroDespacho())
                 .fechaEmision(dto.fechaEmision())
                 .cuitImportador(dto.cuitImportador())
                 .moneda(dto.moneda())
                 .estado(dto.estado())
-                .totalFOB(totalFOB)
+                .totalFOB(dto.totalFOB())
                 .fechaRecepcion(LocalDateTime.now())
                 .build();
 

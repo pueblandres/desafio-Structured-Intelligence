@@ -21,6 +21,7 @@ class XsltTransformationServiceTest {
                 .contains("<numeroDespacho>26001IM04000123A</numeroDespacho>")
                 .contains("<cuitImportador>30715432109</cuitImportador>")
                 .contains("<moneda>USD</moneda>")
+                .contains("<totalFOB>41565.00</totalFOB>")
                 .contains("<estado>RECIBIDA</estado>")
                 .contains("<ncm>8471.30.12</ncm>")
                 .contains("<valorUnitario>185.50</valorUnitario>");

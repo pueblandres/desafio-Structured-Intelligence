@@ -33,6 +33,7 @@ public class DeclaracionXmlParserService {
                     LocalDate.parse(text(root, "fechaEmision")),
                     text(root, "cuitImportador"),
                     text(root, "moneda"),
+                    new BigDecimal(text(root, "totalFOB")),
                     DeclarationStatus.valueOf(text(root, "estado")),
                     parseItems(root)
             );
