@@ -105,6 +105,14 @@ La coleccion usa la variable `baseUrl` con valor por defecto `http://localhost:8
 - Unitarios de `XsltTransformationService`.
 - Unitario de parseo del XML interno incluyendo `totalFOB`.
 
+## Alcance y mejoras posibles
+
+La entrega se enfoco en cubrir el flujo principal solicitado: recibir el XML, validarlo contra el XSD, transformarlo con XSLT, persistirlo con JPA y exponerlo mediante endpoints REST.
+
+No inclui autenticacion, autorizacion, CI/CD ni Dockerfiles complejos porque no formaban parte del alcance principal del desafio. Preferi mantener una solucion simple, clara y facil de levantar.
+
+Como mejoras futuras, agregaría una base de datos Postgres, más tests de casos borde y validaciones adicionales para los parámetros de búsqueda y paginación.
+
 ## Uso de IA
 
 Use Codex / ChatGPT como asistente de implementacion y revision.
