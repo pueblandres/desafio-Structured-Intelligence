@@ -4,6 +4,7 @@ import com.example.importdeclaration.dto.ErrorResponseDTO;
 import java.time.LocalDateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.mapping.PropertyReferenceException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -40,6 +41,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler({
             MethodArgumentTypeMismatchException.class,
             MethodArgumentNotValidException.class,
+            PropertyReferenceException.class,
             IllegalArgumentException.class
     })
     public ResponseEntity<ErrorResponseDTO> handleBadRequest(Exception ex) {

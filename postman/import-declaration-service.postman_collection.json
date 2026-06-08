@@ -1,0 +1,331 @@
+{
+  "info": {
+    "name": "Import Declaration Service",
+    "description": "Coleccion para probar los casos principales del desafio tecnico: alta valida, XML invalido, duplicado, consulta por numeroDespacho y listado paginado.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:8080",
+      "type": "string"
+    },
+    {
+      "key": "numeroDespacho",
+      "value": "26001IM04000123A",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "1 - Crear declaracion valida",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/xml"
+          },
+          {
+            "key": "Accept",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<declaracion>\n    <numeroDespacho>26001IM04000123A</numeroDespacho>\n    <fechaEmision>2026-05-12</fechaEmision>\n    <importador>\n        <cuit>30715432109</cuit>\n        <razonSocial>Importadora del Plata S.A.</razonSocial>\n    </importador>\n    <moneda>USD</moneda>\n    <items>\n        <item>\n            <ncm>8471.30.12</ncm>\n            <descripcion>Notebook 14 pulgadas</descripcion>\n            <cantidad>50</cantidad>\n            <valorUnitario>720.00</valorUnitario>\n        </item>\n        <item>\n            <ncm>8528.72.00</ncm>\n            <descripcion>Monitor LED 24&quot;</descripcion>\n            <cantidad>30</cantidad>\n            <valorUnitario>185.50</valorUnitario>\n        </item>\n    </items>\n</declaracion>",
+          "options": {
+            "raw": {
+              "language": "xml"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/declaraciones",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "declaraciones"
+          ]
+        }
+      },
+      "response": [],
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Status 201 Created', function () {",
+              "    pm.response.to.have.status(201);",
+              "});",
+              "",
+              "pm.test('Devuelve id y numeroDespacho', function () {",
+              "    const json = pm.response.json();",
+              "    pm.expect(json.id).to.exist;",
+              "    pm.expect(json.numeroDespacho).to.eql(pm.collectionVariables.get('numeroDespacho'));",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "2 - Consultar declaracion por numeroDespacho",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/api/declaraciones/{{numeroDespacho}}",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "declaraciones",
+            "{{numeroDespacho}}"
+          ]
+        }
+      },
+      "response": [],
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Status 200 OK', function () {",
+              "    pm.response.to.have.status(200);",
+              "});",
+              "",
+              "pm.test('Devuelve la declaracion persistida', function () {",
+              "    const json = pm.response.json();",
+              "    pm.expect(json.numeroDespacho).to.eql(pm.collectionVariables.get('numeroDespacho'));",
+              "    pm.expect(json.cuitImportador).to.eql('30715432109');",
+              "    pm.expect(json.moneda).to.eql('USD');",
+              "    pm.expect(json.estado).to.eql('RECIBIDA');",
+              "    pm.expect(Number(json.totalFOB)).to.eql(41565);",
+              "    pm.expect(json.items).to.have.length(2);",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "3 - Listar declaraciones paginado",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/api/declaraciones?page=0&size=1",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "declaraciones"
+          ],
+          "query": [
+            {
+              "key": "page",
+              "value": "0"
+            },
+            {
+              "key": "size",
+              "value": "1"
+            }
+          ]
+        }
+      },
+      "response": [],
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Status 200 OK', function () {",
+              "    pm.response.to.have.status(200);",
+              "});",
+              "",
+              "pm.test('Respuesta paginada', function () {",
+              "    const json = pm.response.json();",
+              "    pm.expect(json.content).to.be.an('array');",
+              "    pm.expect(json.page.size).to.eql(1);",
+              "    pm.expect(json.page.number).to.eql(0);",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "4 - Crear declaracion duplicada",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/xml"
+          },
+          {
+            "key": "Accept",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<declaracion>\n    <numeroDespacho>26001IM04000123A</numeroDespacho>\n    <fechaEmision>2026-05-12</fechaEmision>\n    <importador>\n        <cuit>30715432109</cuit>\n        <razonSocial>Importadora del Plata S.A.</razonSocial>\n    </importador>\n    <moneda>USD</moneda>\n    <items>\n        <item>\n            <ncm>8471.30.12</ncm>\n            <descripcion>Notebook 14 pulgadas</descripcion>\n            <cantidad>50</cantidad>\n            <valorUnitario>720.00</valorUnitario>\n        </item>\n        <item>\n            <ncm>8528.72.00</ncm>\n            <descripcion>Monitor LED 24&quot;</descripcion>\n            <cantidad>30</cantidad>\n            <valorUnitario>185.50</valorUnitario>\n        </item>\n    </items>\n</declaracion>",
+          "options": {
+            "raw": {
+              "language": "xml"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/declaraciones",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "declaraciones"
+          ]
+        }
+      },
+      "response": [],
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Status 409 Conflict', function () {",
+              "    pm.response.to.have.status(409);",
+              "});",
+              "",
+              "pm.test('Informa declaracion duplicada', function () {",
+              "    const json = pm.response.json();",
+              "    pm.expect(json.status).to.eql(409);",
+              "    pm.expect(json.error).to.eql('Declaracion duplicada');",
+              "    pm.expect(json.message).to.include(pm.collectionVariables.get('numeroDespacho'));",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "5 - Crear declaracion con XML invalido",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/xml"
+          },
+          {
+            "key": "Accept",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<declaracion>\n    <numeroDespacho>26001IM04000999X</numeroDespacho>\n    <fechaEmision>2026-05-15</fechaEmision>\n    <importador>\n        <cuit>30711111119</cuit>\n        <razonSocial>Test SA</razonSocial>\n    </importador>\n    <items>\n        <item>\n            <ncm>8471.30.12</ncm>\n            <descripcion>Producto X</descripcion>\n            <cantidad>diez</cantidad>\n            <valorUnitario>100.00</valorUnitario>\n        </item>\n    </items>\n</declaracion>",
+          "options": {
+            "raw": {
+              "language": "xml"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/declaraciones",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "declaraciones"
+          ]
+        }
+      },
+      "response": [],
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Status 400 Bad Request', function () {",
+              "    pm.response.to.have.status(400);",
+              "});",
+              "",
+              "pm.test('Informa XML invalido', function () {",
+              "    const json = pm.response.json();",
+              "    pm.expect(json.status).to.eql(400);",
+              "    pm.expect(json.error).to.eql('XML invalido');",
+              "    pm.expect(json.message).to.not.be.empty;",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "6 - Consultar declaracion inexistente",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/api/declaraciones/NO_EXISTE",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "declaraciones",
+            "NO_EXISTE"
+          ]
+        }
+      },
+      "response": [],
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Status 404 Not Found', function () {",
+              "    pm.response.to.have.status(404);",
+              "});",
+              "",
+              "pm.test('Informa declaracion no encontrada', function () {",
+              "    const json = pm.response.json();",
+              "    pm.expect(json.status).to.eql(404);",
+              "    pm.expect(json.error).to.eql('Declaracion no encontrada');",
+              "});"
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}

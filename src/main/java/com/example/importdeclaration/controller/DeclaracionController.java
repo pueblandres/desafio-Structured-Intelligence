@@ -5,12 +5,14 @@ import com.example.importdeclaration.dto.DeclaracionResponseDTO;
 import com.example.importdeclaration.entity.DeclarationStatus;
 import com.example.importdeclaration.service.DeclaracionService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import java.net.URI;
 import java.time.LocalDate;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.MediaType;
@@ -75,7 +77,7 @@ public class DeclaracionController {
 
     @Operation(
             summary = "Listar declaraciones",
-            description = "Lista declaraciones paginadas con filtros opcionales por fecha de emision desde/hasta y estado.",
+            description = "Lista declaraciones paginadas con filtros opcionales por fecha de emision desde/hasta y estado. La paginacion usa los parametros page, size y sort de Spring Data.",
             responses = {
                     @ApiResponse(responseCode = "200", description = "Pagina de declaraciones")
             }
@@ -85,8 +87,12 @@ public class DeclaracionController {
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate desde,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate hasta,
             @RequestParam(required = false) DeclarationStatus estado,
-            Pageable pageable
+            @Parameter(description = "Numero de pagina, empezando en 0", schema = @Schema(defaultValue = "0", minimum = "0"))
+            @RequestParam(defaultValue = "0") int page,
+            @Parameter(description = "Cantidad de elementos por pagina", schema = @Schema(defaultValue = "20", minimum = "1"))
+            @RequestParam(defaultValue = "20") int size
     ) {
+        Pageable pageable = PageRequest.of(page, size);
         return ResponseEntity.ok(declaracionService.list(desde, hasta, estado, pageable));
     }
 }

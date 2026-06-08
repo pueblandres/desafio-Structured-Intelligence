@@ -104,6 +104,16 @@ class DeclaracionControllerIntegrationTest {
     }
 
     @Test
+    void listDeclarationsWithInvalidPageSizeReturnsBadRequest() throws Exception {
+        mockMvc.perform(get("/api/declaraciones")
+                        .param("page", "0")
+                        .param("size", "0"))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.status").value(400))
+                .andExpect(jsonPath("$.error").value("Solicitud invalida"));
+    }
+
+    @Test
     void openApiDocsDocumentXmlRequestAndResourceExamplesPath() throws Exception {
         mockMvc.perform(get("/v3/api-docs"))
                 .andExpect(status().isOk())

@@ -31,6 +31,25 @@ http://localhost:8080
 mvn test
 ```
 
+## Coleccion Postman
+
+Se incluye una coleccion en:
+
+```text
+postman/import-declaration-service.postman_collection.json
+```
+
+Importarla en Postman y ejecutar las requests en orden para cubrir:
+
+- alta valida `201 Created`
+- consulta por `numeroDespacho` `200 OK`
+- listado paginado `200 OK`
+- declaracion duplicada `409 Conflict`
+- XML invalido `400 Bad Request`
+- declaracion inexistente `404 Not Found`
+
+La coleccion usa la variable `baseUrl` con valor por defecto `http://localhost:8080`.
+
 ## URLs utiles
 
 - Swagger UI: `http://localhost:8080/swagger-ui.html`
@@ -63,29 +82,14 @@ mvn test
   - `desde=YYYY-MM-DD`
   - `hasta=YYYY-MM-DD`
   - `estado=RECIBIDA`
-- Soporta `page`, `size` y `sort` via `Pageable`.
-
-## Ejemplos curl
-
-```bash
-curl -X POST http://localhost:8080/api/declaraciones \
-  -H "Content-Type: application/xml" \
-  --data-binary @src/main/resources/xml/ejemplo-declaracion.xml
-```
-
-```bash
-curl http://localhost:8080/api/declaraciones/26001IM04000123A
-```
-
-```bash
-curl "http://localhost:8080/api/declaraciones?desde=2026-05-01&hasta=2026-05-31&estado=RECIBIDA&page=0&size=10"
-```
+- Soporta `page` y `size`.
 
 ## Decisiones tecnicas
 
 - Use H2 in-memory para que el proyecto se pueda levantar con un solo comando, sin depender de Docker ni de una base externa.
 - Separe validacion XML, transformacion XSLT, parseo del XML interno, mapeo y persistencia en clases distintas para que cada pieza sea testeable y facil de explicar.
-- El `totalFOB` se genera en el XSLT y se parsea desde el modelo interno, alineado con el anexo del ejercicio. El XSLT usa una plantilla recursiva compatible con XSLT 1.0 porque el motor por defecto de Java no soporta XPath 2.0.
+- El `totalFOB` se genera en el XSLT y se parsea desde el modelo interno, alineado con el anexo del ejercicio. No cambie el comportamiento pedido: mantuve el calculo dentro de la transformacion XSLT.
+- La expresion del anexo `sum(items/item/(cantidad * valorUnitario))` expresa correctamente la intencion funcional, pero no es compatible con el motor XSLT/XPath 1.0 que usa Java por defecto con `TransformerFactory`. Para no sumar una dependencia externa solo por este calculo, use una plantilla recursiva compatible con XSLT 1.0. Si el proyecto requiriera XSLT/XPath 2.0 de forma estricta, la alternativa seria incorporar Saxon.
 - Use `BigDecimal` para persistir importes y cantidades, evitando errores de precision de `double` en el modelo Java.
 - Agregue indices sobre `numeroDespacho`, `fechaEmision` y `estado`, porque son los campos usados para unicidad y filtros de listado.
 - Centralice errores con `@RestControllerAdvice` para devolver status codes correctos y mensajes consistentes.
@@ -100,15 +104,6 @@ curl "http://localhost:8080/api/declaraciones?desde=2026-05-01&hasta=2026-05-31&
 - Unitarios de `XmlValidationService`.
 - Unitarios de `XsltTransformationService`.
 - Unitario de parseo del XML interno incluyendo `totalFOB`.
-
-## Que quedo afuera por tiempo
-
-- Docker Compose con Postgres.
-- Autenticacion/autorizacion.
-- CI/CD.
-- Observabilidad avanzada.
-- Versionado formal de API.
-- Auditoria detallada de cambios de estado.
 
 ## Uso de IA
 
@@ -131,7 +126,7 @@ Prompts criticos usados o equivalentes:
 Cosas que tuve que corregir o decidir manualmente:
 
 - El calculo de `totalFOB` no debia quedar solo en Java si el anexo indicaba que el modelo interno lo generaba con XSLT.
-- La expresion `sum(items/item/(cantidad * valorUnitario))` del enunciado no es compatible con el motor XSLT 1.0 por defecto de Java, por eso use una plantilla recursiva.
+- La expresion `sum(items/item/(cantidad * valorUnitario))` del enunciado no corre con el motor XSLT/XPath 1.0 por defecto de Java. No lo trate como un cambio de requisito, porque el resultado y el lugar del calculo se mantienen: `totalFOB` sigue saliendo del XSLT. Lo adapte con una plantilla recursiva compatible con el stack obligatorio.
 - Ajuste los errores para que las excepciones de dominio no terminen como `500`.
 - Revise los ejemplos XML para dejarlos como recursos de prueba/documentacion, no como parte del flujo productivo.
 
