@@ -17,6 +17,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -28,6 +30,8 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/api/declaraciones")
 public class DeclaracionController {
+
+    private static final Logger log = LoggerFactory.getLogger(DeclaracionController.class);
 
     private final DeclaracionService declaracionService;
 
@@ -55,7 +59,9 @@ public class DeclaracionController {
     )
     @PostMapping(consumes = MediaType.APPLICATION_XML_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<CreateDeclaracionResponseDTO> create(@RequestBody String xml) {
+        log.info("Solicitud recibida para crear declaracion desde XML. payloadBytes={}", xml == null ? 0 : xml.length());
         CreateDeclaracionResponseDTO response = declaracionService.createFromXml(xml);
+        log.info("Declaracion creada desde XML. id={} numeroDespacho={}", response.id(), response.numeroDespacho());
         return ResponseEntity
                 .created(URI.create("/api/declaraciones/" + response.numeroDespacho()))
                 .body(response);
@@ -72,6 +78,7 @@ public class DeclaracionController {
     )
     @GetMapping(path = "/{numeroDespacho}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<DeclaracionResponseDTO> getByNumeroDespacho(@PathVariable String numeroDespacho) {
+        log.info("Solicitud recibida para consultar declaracion. numeroDespacho={}", numeroDespacho);
         return ResponseEntity.ok(declaracionService.getByNumeroDespacho(numeroDespacho));
     }
 
@@ -93,6 +100,8 @@ public class DeclaracionController {
             @RequestParam(defaultValue = "20") int size
     ) {
         Pageable pageable = PageRequest.of(page, size);
+        log.info("Solicitud recibida para listar declaraciones. desde={} hasta={} estado={} page={} size={}",
+                desde, hasta, estado, page, size);
         return ResponseEntity.ok(declaracionService.list(desde, hasta, estado, pageable));
     }
 }

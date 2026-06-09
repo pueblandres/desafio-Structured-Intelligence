@@ -18,11 +18,15 @@ import java.time.LocalDate;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class DeclaracionServiceImpl implements DeclaracionService {
+
+    private static final Logger log = LoggerFactory.getLogger(DeclaracionServiceImpl.class);
 
     private final XmlValidationService xmlValidationService;
     private final XsltTransformationService xsltTransformationService;
@@ -47,22 +51,28 @@ public class DeclaracionServiceImpl implements DeclaracionService {
     @Override
     @Transactional
     public CreateDeclaracionResponseDTO createFromXml(String xml) {
+        log.info("Iniciando procesamiento de declaracion XML");
         xmlValidationService.validate(xml);
         String xmlInterno = xsltTransformationService.transform(xml);
         DeclaracionInternaDTO dto = declaracionXmlParserService.parse(xmlInterno);
+        log.info("XML transformado y parseado. numeroDespacho={} items={} totalFOB={}",
+                dto.numeroDespacho(), dto.items().size(), dto.totalFOB());
 
         if (declaracionRepository.existsByNumeroDespacho(dto.numeroDespacho())) {
+            log.warn("Declaracion duplicada detectada. numeroDespacho={}", dto.numeroDespacho());
             throw new DuplicateDeclarationException(dto.numeroDespacho());
         }
 
         Declaracion declaracion = declaracionMapper.toEntity(dto);
         Declaracion saved = declaracionRepository.save(declaracion);
+        log.info("Declaracion persistida. id={} numeroDespacho={}", saved.getId(), saved.getNumeroDespacho());
         return new CreateDeclaracionResponseDTO(saved.getId(), saved.getNumeroDespacho());
     }
 
     @Override
     @Transactional(readOnly = true)
     public DeclaracionResponseDTO getByNumeroDespacho(String numeroDespacho) {
+        log.debug("Buscando declaracion por numeroDespacho={}", numeroDespacho);
         return declaracionRepository.findByNumeroDespacho(numeroDespacho)
                 .map(declaracionMapper::toResponse)
                 .orElseThrow(() -> new DeclarationNotFoundException(numeroDespacho));
@@ -71,6 +81,8 @@ public class DeclaracionServiceImpl implements DeclaracionService {
     @Override
     @Transactional(readOnly = true)
     public Page<DeclaracionResponseDTO> list(LocalDate desde, LocalDate hasta, DeclarationStatus estado, Pageable pageable) {
+        log.debug("Listando declaraciones. desde={} hasta={} estado={} page={} size={}",
+                desde, hasta, estado, pageable.getPageNumber(), pageable.getPageSize());
         Specification<Declaracion> specification = Specification
                 .where(DeclaracionSpecifications.fechaDesde(desde))
                 .and(DeclaracionSpecifications.fechaHasta(hasta))

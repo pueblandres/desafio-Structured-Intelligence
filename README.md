@@ -59,6 +59,16 @@ La coleccion usa la variable `baseUrl` con valor por defecto `http://localhost:8
 - Usuario H2: `sa`
 - Password H2: vacio
 
+## Logs
+
+La aplicacion escribe logs en consola y en:
+
+```text
+logs/import-declaration-service.log
+```
+
+Se registran eventos relevantes del flujo: recepcion de solicitudes, validacion XSD, transformacion XSLT, parseo del XML interno, persistencia, consultas y errores controlados. No se loguea el XML completo recibido; solo datos operativos como `numeroDespacho`, cantidad de items, `totalFOB`, pagina/tamano y mensajes de error.
+
 ## Endpoints REST
 
 ### POST `/api/declaraciones`
@@ -111,7 +121,7 @@ La entrega se enfoco en cubrir el flujo principal solicitado: recibir el XML, va
 
 No inclui autenticacion, autorizacion, CI/CD ni Dockerfiles complejos porque no formaban parte del alcance principal del desafio. Preferi mantener una solucion simple, clara y facil de levantar.
 
-Como mejoras futuras, agregaría una base de datos Postgres, más tests de casos borde y validaciones adicionales para los parámetros de búsqueda y paginación.
+Como mejoras futuras, agregaria una base de datos Postgres, mas tests de casos borde y validaciones adicionales para los parametros de busqueda y paginacion.
 
 ## Uso de IA
 

@@ -20,16 +20,19 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(XmlValidationException.class)
     public ResponseEntity<ErrorResponseDTO> handleXmlValidation(XmlValidationException ex) {
+        log.warn("Error de validacion XML: {}", ex.getMessage());
         return build(HttpStatus.BAD_REQUEST, "XML invalido", ex.getMessage());
     }
 
     @ExceptionHandler(DuplicateDeclarationException.class)
     public ResponseEntity<ErrorResponseDTO> handleDuplicate(DuplicateDeclarationException ex) {
+        log.warn("Declaracion duplicada: {}", ex.getMessage());
         return build(HttpStatus.CONFLICT, "Declaracion duplicada", ex.getMessage());
     }
 
     @ExceptionHandler(DeclarationNotFoundException.class)
     public ResponseEntity<ErrorResponseDTO> handleNotFound(DeclarationNotFoundException ex) {
+        log.warn("Declaracion no encontrada: {}", ex.getMessage());
         return build(HttpStatus.NOT_FOUND, "Declaracion no encontrada", ex.getMessage());
     }
 
@@ -45,6 +48,7 @@ public class GlobalExceptionHandler {
             IllegalArgumentException.class
     })
     public ResponseEntity<ErrorResponseDTO> handleBadRequest(Exception ex) {
+        log.warn("Solicitud invalida: {}", ex.getMessage());
         return build(HttpStatus.BAD_REQUEST, "Solicitud invalida", ex.getMessage());
     }
 

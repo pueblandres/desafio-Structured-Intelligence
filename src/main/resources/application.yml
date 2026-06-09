@@ -24,6 +24,11 @@ springdoc:
     path: /swagger-ui.html
 
 logging:
+  file:
+    name: logs/import-declaration-service.log
   level:
     com.example.importdeclaration: INFO
     org.springframework.web: INFO
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} %-5level [%thread] %logger{36} - %msg%n"
+    file: "%d{yyyy-MM-dd HH:mm:ss} %-5level [%thread] %logger{36} - %msg%n"
