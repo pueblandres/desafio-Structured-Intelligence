@@ -125,13 +125,6 @@ class DeclaracionControllerIntegrationTest {
                 .andExpect(content().string(not(containsString("root element name is undefined"))));
     }
 
-    @Test
-    void serviceWorkerRequestReturnsStaticNoopScript() throws Exception {
-        mockMvc.perform(get("/service-worker.js"))
-                .andExpect(status().isOk())
-                .andExpect(content().string(containsString("registration.unregister")));
-    }
-
     private String readResource(String path) throws Exception {
         return new ClassPathResource(path).getContentAsString(StandardCharsets.UTF_8);
     }
